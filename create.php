@@ -28,7 +28,7 @@
 
     if($image && $image['tmp_name']){
 
-      $imagePath = 'images/'.randomString(8).$image['name'];
+      $imagePath = 'images/'.randomString(8).'/'.$image['name'];
       mkdir(dirname($imagePath));
       move_uploaded_file($image['tmp_name'], $imagePath);
 

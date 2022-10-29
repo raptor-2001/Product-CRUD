@@ -16,7 +16,7 @@
   $statement->execute();
   $product = $statement->fetch(PDO::FETCH_ASSOC);
 
-  $errors=[];
+
   $title=$product['title'];
   $description=$product['description'];
   $price = $product['price'];
@@ -25,14 +25,13 @@
     $title = $_POST['title'];
     $description = $_POST['description'];
     $price = $_POST['price'];
-    $date = date('Y-m-d H:i:s');
-
+    
     $image = $_FILES['image'] ?? null;
-    $imagePath = $product['image'];
+    $imagePath = '';
 
     
 
-    if(is_dir('images')){
+    if(!is_dir('images')){
       mkdir('images');
     }
 
@@ -42,7 +41,7 @@
         unlink($product['image']);
       }
       
-      $imagePath = 'images/'.randomString(8).$image['name'];
+      $imagePath = 'images/'.randomString(8).'/'.$image['name'];
       mkdir(dirname($imagePath));
       move_uploaded_file($image['tmp_name'], $imagePath);
 
@@ -58,14 +57,19 @@
     if(empty($errors)){
 
       // use this
-      $statement = $pdo->prepare("UPDATE INTO products SET title = :title, image = :image, description = :description, price = :price, WHERE id = :id ");
+      $statement = $pdo->prepare("UPDATE products SET
+                                  title = :title, 
+                                  image = :image, 
+                                  description = :description, 
+                                  price = :price
+                                  WHERE id = :id ");
       
       $statement->bindValue(':title',$title);
       $statement->bindValue(':image',$imagePath);
       $statement->bindValue(':description',$description);
       $statement->bindValue(':price',$price);
-      $statement->bindValue(':price',$id);
-      $statement->bindValue(':date',$date);
+      $statement->bindValue(':id',$id);
+      
       $statement->execute();
 
       header('Location: index.php');
